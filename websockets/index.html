@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Server!</title>
+</head>
+
+<body>
+  <h1>WebSocket Client</h1>
+  <button id="connect">Connect to WebSocket</button>
+  <button id="sendHey" disabled>Send Hey</button>
+  <button id="closeConnection" disabled>Close Connection</button>
+  <p id="status">Not connected</p>
+  <p id="messages"></p>
+</body>
+
+<script>
+  let socket;
+  document.getElementById("connect").addEventListener('click', () => {
+    socket = new WebSocket('ws://localhost:8000')
+
+    socket.addEventListener('open', () => {
+      document.getElementById("status").textContent = "Connected to WebSocket server!"
+      document.getElementById("sendHey").disabled = false
+      document.getElementById("closeConnection").disabled = false
+    })
+
+    socket.addEventListener("message", (event) => {
+      document.getElementById('messages').textContent = `Messages from server: ${event.data}`
+    });
+
+    socket.addEventListener("close", () => {
+      document.getElementById('status').textContent = 'Connection closed.'
+      document.getElementById("sendHey").disabled = true
+      document.getElementById("closeConnection").disabled = true
+      document.getElementById('messages').textContent = 'No more messages.'
+    });
+
+    document.getElementById("sendHey").addEventListener('click', () => {
+      socket.send('hey')
+    });
+
+    document.getElementById("closeConnection").addEventListener('click', () => {
+      socket.close()
+    });
+  });
+</script>
+
+</html>
